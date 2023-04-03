@@ -1,0 +1,27 @@
+name: ci-common
+description: install ci-common
+inputs:
+  version:
+    description: ci-common verion to install
+    required: false
+    default: 'latest'
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        dest="$HOME/ci-common"
+
+        version="${{ inputs.version }}"
+
+        if [[ "${version}" == "latest" ]]; then
+          version="$(curl -sSf https://panubo-bins.s3.amazonaws.com/ci-common/latest.txt)"
+        fi
+
+        if [[ ! -f "${dest}/version.txt" ]] || [[ "$(cat "${dest}/version.txt")" != "${version}" ]]; then
+          echo "Downloading ${version} of ci-common"
+          mkdir -p "${dest}"
+          curl -sSf -o "ci-common-${version}.tar.gz" "https://panubo-bins.s3.amazonaws.com/ci-common/${version}/ci-common-${version}.tar.gz"
+          tar -C "$(dirname ${dest})" -zxf "ci-common-${version}.tar.gz"
+          echo "${version}" | tee "${dest}/version.txt"
+        fi

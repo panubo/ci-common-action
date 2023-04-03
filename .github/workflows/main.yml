@@ -1,0 +1,11 @@
+on:
+  pull_request:
+  push:
+    branches: ["*"]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: self
+        uses: ./
